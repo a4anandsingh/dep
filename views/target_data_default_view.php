@@ -1,0 +1,1043 @@
+<?php //showArrayValues($arrTargetData);//
+/* showArrayValues($arrBlockIps);
+exit;*/
+ //showArrayValues($arrTargetBlockData);
+?>
+<div class="panel panel-primary">   
+    <!-- Default panel contents -->
+    <div class="panel-heading">
+        <strong><big><big>Financial and Physical Target Setup </big>( For the FY : <?php echo $session_year; ?> )</big></strong>
+    </div>
+    <div class="panel-body">
+        <form id="frmYearlyTarget" name="frmYearlyTarget" method="post" onsubmit="return false;" autocomplete="off">
+            <input type="hidden" name="SESSION" id="SESSION" value="<?php echo $session_id; ?>"/>
+            <div style="width:100%;float:left;padding:5px" id="yearlyformdata">
+                <table width="100%" border="0" cellpadding="2" cellspacing="1" class="ui-widget-content" style="margin-bottom:5px">
+                <tr>
+                    <td width="100" class="ui-state-default"><strong>Name of Project</strong></td>
+                    <td class="ui-widget-content">
+                        <big><strong><?php echo $PROJECT_NAME; ?></strong></big>
+                        <input type="hidden" name="PROJECT_SETUP_ID" id="PROJECT_SETUP_ID" value="<?php echo $PROJECT_SETUP_ID ?>"/>
+                    </td>
+                    <td width="120" class="ui-state-default"><strong>Project Code</strong></td>
+                    <td width="120" class="ui-widget-content"><strong><?php echo $PROJECT_CODE; ?></strong></td>
+                </tr>
+                <tr>
+                    <td nowrap="nowrap" class="ui-state-default"><strong>Budget Amount</strong></td>
+                    <td class="ui-widget-content">
+                        <input type="hidden" name="BUDGET_AMOUNT" value="<?php echo $BUDGET_AMOUNT; ?>" id="BUDGET_AMOUNT"/>
+                        <div id="divBudgetAmount"
+                             style="float:left;font-size:13px;font-weight:bold;padding-right:3px">
+                            <?php echo $BUDGET_AMOUNT; ?>
+                        </div>
+                        <input type="hidden" name="AA_AMOUNT" id="AA_AMOUNT" value="<?php echo $AA_AMOUNT; ?>"/>
+                        <input type="hidden" name="AA_RAA" id="AA_RAA" value="<?php echo $AA_RAA; ?>"/>(Rs.in Lakh)
+                    </td>
+                    <td class="ui-state-default"><strong><?php echo $AA_RAA; ?> Amount (Rs.) </strong></td>
+                    <td class="ui-widget-content" align="right"><strong><?php echo $AA_AMOUNT; ?></strong> (in Lakh)</td>
+                </tr>
+                </table>
+                   <table width="100%" border="1" cellpadding="4" cellspacing="1" class="ui-widget-content" id="tbl_physical_target" style="border-collapse: collapse;border-spacing: 0;">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="ui-state-default">Month</th>
+                    <th  rowspan="2" class="ui-state-default">Financial</th>
+                    <th rowspan="2" colspan="2"  class="ui-state-default">Land Acquisition <br/> (cases to be<br/> submitted)</th>                 
+                    <th rowspan="2" class="ui-state-default">Forest<br/> Acquisition </th>                    
+                    <th colspan="3" class="ui-state-default">Headworks</th>
+                    <th colspan="4" class="ui-state-default">Canals</th>                 
+                    <th colspan="4"  class="ui-state-default">Irrigation Potential<br/> to be created</th>
+                    <th colspan="3"  class="ui-state-default">Irrigation Potential<br/> to be Restored</th>
+                </tr>
+                <tr>
+                    <th  class="ui-state-default">Earthwork </th>
+                    <th  class="ui-state-default">Masonry/Concrete</th>
+                    <th  class="ui-state-default">Steel Work </th>
+                    <th  class="ui-state-default">Earth Work </th>
+                    <th  class="ui-state-default">Structure </th>
+                    <th  class="ui-state-default">Structure Masonry / Conc.     </th>
+                    <th  class="ui-state-default">Lining </th>
+                    <th class="ui-state-default">Block</th>
+                    <th class="ui-state-default">Kharif</th>
+                    <th class="ui-state-default">Rabi</th>
+                    <th class="ui-state-default">Total</th>
+                     
+                    <th class="ui-state-default">Kharif</th>
+                    <th class="ui-state-default">Rabi</th>
+                    <th class="ui-state-default">Total</th>
+                </tr>
+                 
+              
+                <tr>
+                    <th class="ui-state-default">&nbsp;</th>
+                    <th class="ui-state-default">Rs. Lacs</th>
+                   
+                    <th class="ui-state-default">Number</th>
+                    <th class="ui-state-default">Ha</th>
+                    <th class="ui-state-default">Ha</th>
+                 
+                    <th class="ui-state-default">Th Cum</th>
+                    <th class="ui-state-default">Th Cum</th>
+                    <th class="ui-state-default">MT</th>
+                    <th class="ui-state-default">Th Cum</th>
+                    <th class="ui-state-default">Nos</th>
+                    <th class="ui-state-default">Th Cum</th>
+                    <th class="ui-state-default">KM</th>
+                    <th class="ui-state-default">Name</th>
+                    <th class="ui-state-default">Ha</th>
+                    <th class="ui-state-default">Ha</th>
+                    <th class="ui-state-default">Ha</th>
+                      
+                    <th class="ui-state-default">Ha</th>
+                    <th class="ui-state-default">Ha</th>
+                    <th class="ui-state-default">Ha</th>
+                </tr>
+                </thead>
+                    <?php
+                    
+                    $arrIntNames = array('LA_NO','CANAL_STRUCTURE');
+                    $monthsOfFinyear = array(1 => 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+                    $i = 4;
+                    $arrRows = array();
+                    $totalTargetThisSession = array(
+                        'EXPENDITURE'=>0, 'LA_NO' => 0, 'LA_HA' => 0,
+                        'FA_HA'=>0, 'HW_EARTHWORK' => 0,
+                        'HW_MASONRY' => 0, 'STEEL_WORK' => 0, 'CANAL_EARTHWORK' => 0,
+                        'CANAL_STRUCTURE' => 0, 'CANAL_STRUCTURE_MASONRY' => 0,'CANAL_LINING'=>0
+                    ); //'IP_TOTAL' => 0, ,'KHARIF' => 0, 'RABI' => 0
+                    $colWidth = 6;
+                    $aMonthVal=0;
+                    //for ($a = 1; $a <= 12; $a++) {
+                    //echo 'xxx :';
+                    //showArrayValues($arrTargetData);
+                    //startDate endDate
+                    foreach($arrTargetData as $key=>$targetDatum) {
+                        $dateValue = strtotime($key);
+                        if($dateValue<$startDate) continue;
+                        if($dateValue>$endDate) continue;
+                        //$startMonth
+                        //sum of monthly
+                        $time = '';
+                        $time = strtotime($arrTargetData[$key]->TARGET_DATE);
+                        $a = date("m", strtotime($key));
+                      
+                        
+                        $showHidden = 'text';//(($aMonthVal < $startMonth) || ($aMonthVal > $endMonth)) ? 'hidden' : 'text';
+
+                        foreach ($totalTargetThisSession as $k=>$v){
+                            if(array_key_exists($k, $arrTargetData[$key]))
+                                $totalTargetThisSession[$k] += ((float)$arrTargetData[$key]->{$k});
+                        }
+                        //echo '::'.$key.'::';
+                        //showArrayValues($arrTargetData[$key]);
+                        $arrMonthTarget = array(
+                            array(
+                                'NAME' => 'MON',
+                                'VALUE' => date('M', strtotime($key)) ,
+                                'TYPE' => 'caption',
+                                'MONTH' => $a,
+                                'COL_WIDTH' => 0,
+                                'SHOW' => 1,
+                                'TARGET_DATE'=>$key
+                            ),
+                            array(
+                                'NAME' => 'EXPENDITURE',
+                                'VALUE' => $arrTargetData[$key]->EXPENDITURE,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => 1
+                            ),
+                            array(
+                                'NAME' => 'LA_NO',
+                                'VALUE' => $arrTargetData[$key]->LA_NO,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => 1,
+                                'SHOW' => (($arrSetupData['LA_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'LA_HA',
+                                'VALUE' => $arrTargetData[$key]->LA_HA,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['LA_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'FA_HA',
+                                'VALUE' => $arrTargetData[$key]->FA_HA,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['FA_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'HW_EARTHWORK',
+                                'VALUE' => $arrTargetData[$key]->HW_EARTHWORK,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['HW_EARTHWORK_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'HW_MASONRY',
+                                'VALUE' => $arrTargetData[$key]->HW_MASONRY,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['HW_MASONRY_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'STEEL_WORK',
+                                'VALUE' => $arrTargetData[$key]->STEEL_WORK,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['STEEL_WORK_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'CANAL_EARTHWORK',
+                                'VALUE' => $arrTargetData[$key]->CANAL_EARTHWORK,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['CANAL_EARTHWORK_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'CANAL_STRUCTURE',
+                                'VALUE' => $arrTargetData[$key]->CANAL_STRUCTURE,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => 1,
+                                'SHOW' => (($arrSetupData['CANAL_STRUCTURE_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'CANAL_STRUCTURE_MASONRY',
+                                'VALUE' => $arrTargetData[$key]->CANAL_STRUCTURE_MASONRY,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => 1,
+                                'SHOW' => (($arrSetupData['CANAL_STRUCTURE_MASONRY_NA'] == 0) ? 1 : 0)
+                            ),
+                             array(
+                                'NAME' => 'CANAL_LINING',
+                                'VALUE' => $arrTargetData[$key]->CANAL_LINING,
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => 1,
+                                'SHOW' => (($arrSetupData['CANAL_LINING_NA'] == 0) ? 1 : 0)
+                            ),
+                            array(
+                                'NAME' => 'IP_TOTAL',
+                                'VALUE' => '',
+                                'TYPE' => $showHidden,
+                                'MONTH' => $a,
+                                'COL_WIDTH' => $colWidth,
+                                'SHOW' => (($arrSetupData['IP_TOTAL_NA'] == 0) ? 1 : 0),
+                                'KHARIF' => '',
+                                'RABI' => '',
+                                'TARGET_DATE'=>$key
+                            )
+                        );
+                        array_push($arrRows, $arrMonthTarget);
+                        if ($i == 12) {
+                            $i = 1;
+                        } else {
+                            $i++;
+                        }
+                    }//for
+
+                    $arrForValidation = array();
+         
+                    $subTotalKharif=0;
+                    $subTotalRabi=0;
+                    $subTotalIp=0;
+
+                    $grandTotalKharif=0;
+                    $grandTotalRabi=0;
+                    $grandTotalIp=0;
+
+                    foreach($arrRows as $arrRow){
+                        echo '<tr>';
+                        foreach($arrRow as $arrColumn){
+                            
+                            echo '<td class="ui-widget-content" align="center" rowspan="' . (($arrColumn['NAME'] == 'IP_TOTAL') ? '' : (count($arrBlockIps) + 1)) . '">';
+                            if($arrColumn['NAME'] == 'MON'){
+                                echo '<strong>' . $arrColumn['VALUE'] . '</strong>';
+                                echo '<input name="TARGET_DATE[' . $arrColumn['MONTH'] . ']" value="' . $arrColumn['TARGET_DATE'] . '" type="hidden" /> ';
+                                  
+                            }else{
+
+                                if($arrColumn['SHOW']){
+                                        if (strstr($buttons, 'Project Locked')) {
+                                        if ($arrColumn['NAME'] == 'IP_TOTAL') {
+                                            echo $arrColumn['KHARIF'] .
+                                                '</td>
+                                                <td class="ui-widget-content" align="center">qqqq0000000000' .
+                                                $arrColumn['RABI'] .
+                                                '</td>                          
+                                                    <td class="ui-widget-content" align="center">' .
+                                                $arrColumn['VALUE'];
+                                        } else {
+                                            echo ' ' . $arrColumn['VALUE'];
+                                        }//else
+                                    } else {
+
+                                        $subTotalKharif=0;
+                                        $subTotalRabi=0;
+                                        $subTotalIp=0;
+                                        $subTOtalRabiRestored=0;
+                                        $subTotalKharifRestored=0;
+                                        $subTotalIpRestored=0;
+                                     
+                                         if ($arrColumn['TYPE'] == 'text') {
+                                            $arrMonthB = array();
+                                            if ($arrColumn['NAME'] == 'IP_TOTAL') {
+                                                $cnt = 0;
+                                                foreach($arrBlockIps as $k=>$v) {
+                                                    array_push($arrMonthB, $k);
+                                                    $cnt++;
+                                                    if($cnt > 1) {
+                                                        echo '<tr><td align="center">'.$v['BLOCK_NAME'].'</td>';
+                                                    }else{
+                                                        echo $v['BLOCK_NAME'] . '</td>';
+                                                    }
+                                                    if(!array_key_exists($arrColumn['TARGET_DATE'], $arrTargetBlockData)){
+                                                         echo '<td class="ui-widget-content" align="center">'.$arrColumn['TARGET_DATE'].'</td>
+                                                            <td class="ui-widget-content" align="center"></td>';
+                                                        continue;
+                                                    }
+                                                    
+                                                    echo '<td class="ui-widget-content" align="center">';
+
+                                                    $readonly_NewIR=$readonly_IR_Restored='required';
+
+                                                    if($v['type']==1 || $arrSetupData['NEW_IRRIGATION_POTENTIAL_NA']==1)
+                                                        {
+                                                            $readonly_IR_Restored='readonly="readonly" style="background-color:#ECF9FF" ';
+                                                        }
+                                                    else if($v['type']==2 || $arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED']==1)
+                                                       {
+                                                         $readonly_NewIR='readonly="readonly" style="background-color:#ECF9FF" ';
+                                                       }
+													   
+                                                    echo '<input name="KHARIF[' . $arrColumn['MONTH'] . ']['.$k.']" 
+                                                            id="KHARIF_' . $arrColumn['MONTH'] .$k.'" 
+                                                            value="' . $arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF'] . '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myinteger myytclass KHARIF" 
+                                                            autocomplete="off" 
+                                                            onkeyup="calculateIrri(\'' . $arrColumn['MONTH'].$k . '\',this.id);"  '.$readonly_NewIR.'/>                                                            
+                                                         </td>
+                                                        
+                                                        <td class="ui-widget-content" align="center">
+                                                            <input name="RABI[' . $arrColumn['MONTH'] . ']['.$k.']"
+                                                            id="RABI_' . $arrColumn['MONTH'] .$k. '" 
+                                                            value="' . $arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI'] . '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myinteger myytclass RABI" 
+                                                            autocomplete="off"
+                                                            onkeyup="calculateIrri(\'' . $arrColumn['MONTH'] .$k. '\',this.id);"  '.$readonly_NewIR.'/>
+                                                        </td>                                                       
+                                                        
+                                                        <td class="ui-state-default" align="center">
+                                                            <input name="IP' . '[' . $arrColumn['MONTH'] . ']['.$k.']"
+                                                            id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] .$k. '" 
+                                                            value="' . (intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF']) + intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI'])) . '" type="text" maxlength="10"  
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass in_ip"
+                                                            autocomplete="off" 
+                                                               readonly="readonly" style="background-color:#ECF9FF" />';
+
+                                                    $subTotalKharif += intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF']);
+                                                    $subTotalRabi += intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI']);
+                                                    $subTotalIp += (intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF'])+ intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI']));
+  
+                                                     echo '<td class="ui-widget-content" align="center">';
+                                                      if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                        echo '<input name="KHARIF_RESTORED[' . $arrColumn['MONTH'] . ']['.$k.']" 
+                                                            id="KHARIF_RESTORED_' . $arrColumn['MONTH'] .$k.'" 
+                                                            value="' . $arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF_RESTORED'] . '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myinteger myytclass KHARIF_RESTORED" 
+                                                            autocomplete="off" 
+                                                            onkeyup="calculateRestoredIrri(\'' . $arrColumn['MONTH'].$k . '\',this.id);" '.$readonly_IR_Restored.' /> ';
+                                                    }
+                                                    
+                                                    echo '     </td><td class="ui-widget-content" align="center">';
+                                                    if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                         echo '   <input name="RABI_RESTORED[' . $arrColumn['MONTH'] . ']['.$k.']"
+                                                            id="RABI_RESTORED_' . $arrColumn['MONTH'] .$k. '" 
+                                                            value="' . $arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI_RESTORED'] . '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myinteger myytclass RABI_RESTORED" 
+                                                            autocomplete="off"
+                                                            onkeyup="calculateRestoredIrri(\'' . $arrColumn['MONTH'] .$k. '\',this.id);" '.$readonly_IR_Restored.'/>';
+                                                    }
+                                                       echo ' </td><td class="ui-state-default" align="center">';
+
+                                                    if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                        echo '    <input name="IP_RESTORED' . '[' . $arrColumn['MONTH'] . ']['.$k.']"
+                                                            id="' . $arrColumn['NAME'] . '_RESTORED_' . $arrColumn['MONTH'] .$k. '" 
+                                                            value="' . (intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF_RESTORED']) + intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI_RESTORED'])) . '" type="text" maxlength="10"  
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass in_ip"
+                                                            autocomplete="off" 
+                                                               readonly="readonly" style="background-color:#ECF9FF"  />';
+                                                    }
+                                                    $subTotalKharifRestored += intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF_RESTORED']);
+                                                    $subTOtalRabiRestored += intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI_RESTORED']);
+                                                    //$subTotalIp += $arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]->IP_TOTAL ;
+                                                    $subTotalIpRestored += (intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['KHARIF_RESTORED'])+ intVal($arrTargetBlockData[$arrColumn['TARGET_DATE']][$k]['RABI_RESTORED']));
+
+                                                    if ($cnt == 1) {
+                                                        echo '</td></tr>';
+                                                    }
+                                                }//foreach
+                                                echo '<tr><td class="ui-state-default" align="center">Total </td>';
+                                                echo '<td class="ui-state-default" align="center">';
+                                                if(!$arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])
+                                                    {
+                                                    echo '  <input type="hidden" id="m_'.$arrColumn['MONTH'].'" value="'.implode(',',$arrMonthB).'" />
+                                                              <input name="IP_KHARIF[' . $arrColumn['MONTH'] . ']" 
+                                                                id="IP_KHARIF_' . $arrColumn['MONTH'] . '" 
+                                                                value="' . $subTotalKharif . '" type="text" maxlength="10" 
+                                                                size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" readonly="readonly" style="background-color:#ECF9FF"/>';
+                                                    }
+                                                        
+                                                     echo '   </td><td class="ui-state-default" align="center">';
+                                                if(!$arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])
+                                                    {
+                                                      echo '  <input name="IP_RABI[' . $arrColumn['MONTH'] . ']" 
+                                                            id="IP_RABI_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $subTotalRabi. '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" readonly="readonly"  style="background-color:#ECF9FF"/>';
+                                                     }       
+                                                   echo '    </td><td class="ui-state-default" align="center">';
+
+                                                     if(!$arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])
+                                                    {
+                                                    echo '  <input name="' . $arrColumn['NAME'] . '[' . $arrColumn['MONTH'] . ']" 
+                                                            id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $subTotalIp . '" type="text" maxlength="10"  
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" 
+                                                            required  readonly="readonly" style="background-color:#ECF9FF"/>';
+                                                    }
+                                                    echo '    </td><td class="ui-state-default" align="center">';
+                                                 if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                echo '
+                                                           <input name="IP_KHARIF_RESTORED[' . $arrColumn['MONTH'] . ']" 
+                                                            id="IP_KHARIF_RESTORED_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $subTotalKharifRestored . '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" readonly="readonly" style="background-color:#ECF9FF"/>';
+                                                        }
+
+                                                       echo ' </td><td class="ui-state-default" align="center">';
+
+                                                     if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                     echo '      <input name="IP_RABI_RESTORED[' . $arrColumn['MONTH'] . ']" 
+                                                            id="IP_RABI_RESTORED_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $subTOtalRabiRestored. '" type="text" maxlength="10" 
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" readonly="readonly"  style="background-color:#ECF9FF"/>';
+                                                      }      
+                                                    echo '    </td><td class="ui-state-default" align="center">';
+                                                    if(!$arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])
+                                                    {
+                                                    echo '      <input name="' . $arrColumn['NAME'] . '[' . $arrColumn['MONTH'] . ']" 
+                                                            id="' . $arrColumn['NAME'] . '_RESTORED_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $subTotalIpRestored . '" type="text" maxlength="10"  
+                                                            size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext myytclass" 
+                                                            required  readonly="readonly" style="background-color:#ECF9FF"/>';
+                                                       }     
+                                                    echo '    </td>                                                        
+                                                       </tr>';
+                                            }else{
+                                                echo '<input name="'.$arrColumn['NAME'].'['.$arrColumn['MONTH'].']" 
+                                                    id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '" 
+                                                    value="' . $arrColumn['VALUE'] . '" type="text" maxlength="10" 
+                                                    size="' . $arrColumn['COL_WIDTH'] . '" class="centertext xtext '.$arrColumn['NAME'].'" ' .
+                                                           ((in_array($arrColumn['NAME'], $arrIntNames)) ? 'myinteger':'mydecimal').'" 
+                                                    onkeyup="calculateSubTotal(\'' . $arrColumn['NAME'] . '\',\'' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '\');" required />';
+                                            }//else
+                                        } else {
+                                            if ($arrColumn['NAME'] == 'IP_TOTAL') {
+                                                $cnt = 0;
+                                                foreach ($arrBlockIps as $k => $v) {
+                                                    $cnt++;
+                                                    if ($cnt > 1) {
+                                                        echo '<tr><td align="center">' . $v['BLOCK_NAME'] . '</td>';
+                                                    } else {
+                                                        echo $v['BLOCK_NAME'] . '</td>';
+                                                    }
+                                                    echo '<td class=" class="ui-widget-content" align="center">';
+                                                    echo '<input name="KHARIF[' . $arrColumn['MONTH'] . ']['.$k.']" 
+                                                        id="KHARIF' . $arrColumn['MONTH'] . '" 
+                                                        value="' . $arrColumn['KHARIF'] . '" type="hidden" />
+                                                        ' . $arrColumn['KHARIF'] . '
+                                                        </td>
+                                                        <td class="ui-widget-content" align="center">
+                                                        <input name="RABI[' . $arrColumn['MONTH'] . ']['.$k.']" 
+                                                        id="RABI' . $arrColumn['MONTH'] . '" 
+                                                        value="' . $arrColumn['RABI'] . '" type="hidden" />
+                                                        ' . $arrColumn['RABI'] . '
+                                                        </td>
+                                                        <td class="ui-widget-content" align="center"> 
+                                                            <input name="IP'. '[' . $arrColumn['MONTH'] . ']['.$k.']" 
+                                                            id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $arrColumn['VALUE'] . '" type="hidden" />
+                                                            ' . $arrColumn['VALUE'] . '
+                                                        ';
+                                                    if ($cnt == 1) {
+                                                        echo '</td></tr>';
+                                                    }
+                                                }//foreach
+                                                echo '<tr>
+                                                    <td class="ui-state-default" align="center">Total </td>                                                    
+                                                    <td class="ui-state-default" align="center"><input name="IP_KHARIF[' . $arrColumn['MONTH'] . ']" 
+                                                        id="IP_KHARIF' . $arrColumn['MONTH'] . '" 
+                                                        value="' . $arrColumn['KHARIF'] . '" type="hidden" />
+                                                        ' . $arrColumn['KHARIF'] . '
+                                                     </td>
+                                                     <td class="ui-state-default" align="center">
+                                                        <input name="IP_RABI[' . $arrColumn['MONTH'] . ']" 
+                                                        id="RABI' . $arrColumn['MONTH'] . '" 
+                                                        value="' . $arrColumn['RABI'] . '" type="hidden" />
+                                                        ' . $arrColumn['RABI'] . '
+                                                     </td>
+                                                     <td class="ui-state-default" align="center"> 
+                                                            <input name="' . $arrColumn['NAME'] . '[' . $arrColumn['MONTH'] . ']" 
+                                                            id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '" 
+                                                            value="' . $arrColumn['VALUE'] . '" type="hidden" />
+                                                            ' . $arrColumn['VALUE'] . '
+                                                      </td>
+
+                                                   </tr>';
+                                            } else {
+                                                echo ' <input name="' . $arrColumn['NAME'] . '[' . $arrColumn['MONTH'] . ']" 
+                                                id="' . $arrColumn['NAME'] . '_' . $arrColumn['MONTH'] . '" 
+                                                value="' . $arrColumn['VALUE'] . '" type="hidden" />' . $arrColumn['VALUE'];
+                                            }//else
+                                        }//else
+                                    // end of copy if 
+                                    }//else
+                                }//if
+                            }//if
+                            echo '</td>';
+                        }//foreach
+                        echo '</tr>';
+                        $grandTotalKharif += $subTotalKharif;
+                        $grandTotalRabi += $subTotalRabi;
+                        $grandTotalIp += $subTotalIp;
+                    }//foreach 
+                   ?>
+                    </tr>
+                    <tr>
+                  <td align="center" class="ui-state-default">Total</td>
+                  <td align="center" class="ui-state-default" id="EXPENDITURE_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="LA_NO_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="LA_HA_T">&nbsp;</td>
+                 
+                  <td align="center" class="ui-state-default" id="FA_HA_T">&nbsp;</td>
+               
+                  <td align="center" class="ui-state-default" id="HW_EARTHWORK_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="HW_MASONRY_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="STEEL_WORK_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="CANAL_EARTHWORK_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="CANAL_STRUCTURE_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="CANAL_STRUCTURE_MASONRY_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="CANAL_LINING_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" >&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="KHARIF_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="RABI_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="TOTAL_T">&nbsp;</td>
+                    <td align="center" class="ui-state-default" id="KHARIF_RESTORED_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="RABI_RESTORED_T">&nbsp;</td>
+                  <td align="center" class="ui-state-default" id="TOTAL_RESTORED_T">&nbsp;</td>
+                </tr>
+                    <tr>
+                      <td align="center" class="ui-widget-content">Estimated</td>
+                      <td align="center" class="ui-widget-content">&nbsp;</td>
+                      <td align="center" class="ui-widget-content" id="LA_NO_ESTI"><?php  echo ($arrSetupData['LA_NA'])?'':$arrEstimation['LA_NO'];?></td>
+                      <td align="center" class="ui-widget-content" id="LA_HA_ESTI"><?php echo ($arrSetupData['LA_NA'])?'':$arrEstimation['LA_HA'];?></td>
+                      
+                      <td align="center" class="ui-widget-content" id="FA_HA_ESTI"><?php echo ($arrSetupData['FA_NA'])?'':$arrEstimation['FA_HA'];?></td>
+                    
+                      <td align="center" class="ui-widget-content" id="HW_EARTHWORK_ESTI"><?php echo ($arrSetupData['HW_EARTHWORK_NA'])?'':$arrEstimation['HW_EARTHWORK'];?></td>
+                      <td align="center" class="ui-widget-content" id="HW_MASONRY_ESTI"><?php echo ($arrSetupData['HW_MASONRY_NA'])?'':$arrEstimation['HW_MASONRY'];?></td>
+                      <td align="center" class="ui-widget-content" id="STEEL_WORK_ESTI"><?php echo ($arrSetupData['STEEL_WORK_NA'])?'':$arrEstimation['STEEL_WORK'];?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_EARTHWORK_ESTI"><?php echo ($arrSetupData['CANAL_EARTHWORK_NA'])?'':$arrEstimation['CANAL_EARTHWORK'];?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_ESTI"><?php echo ($arrSetupData['CANAL_STRUCTURE_NA'])?'':$arrEstimation['CANAL_STRUCTURE'];?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_MASONRY_ESTI"><?php echo ($arrSetupData['CANAL_STRUCTURE_MASONRY_NA'])?'':$arrEstimation['CANAL_STRUCTURE_MASONRY'];?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_LINING_ESTI"><?php echo ($arrSetupData['CANAL_LINING_NA'])?'':$arrEstimation['CANAL_LINING'];?></td>
+                      <td align="center" class="ui-widget-content" >&nbsp;</td>
+                      <td align="center" class="ui-widget-content" id="KHARIF_ESTI"><?php echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':$arrEstimation['KHARIF'];?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_ESTI"><?php echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':$arrEstimation['RABI'];
+                      //echo $arrEstimation['RABI'];?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_ESTI"><?php echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':($arrEstimation['KHARIF']+$arrEstimation['RABI']);
+                      // echo ($arrEstimation['KHARIF']+$arrEstimation['RABI']);?></td>
+                       <td align="center" class="ui-widget-content" id="KHARIF_RESTORED_ESTI"><?php  echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':$arrEstimation['KHARIF_RESTORED'];
+                       //echo $arrEstimation['KHARIF_RESTORED'];?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_RESTORED_ESTI"><?php echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':$arrEstimation['RABI_RESTORED'];
+                      //echo $arrEstimation['RABI_RESTORED'];?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_RESTORED_ESTI"><?php echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':($arrEstimation['KHARIF_RESTORED']+$arrEstimation['RABI_RESTORED']);
+
+                      //echo ($arrEstimation['KHARIF_RESTORED']+$arrEstimation['RABI_RESTORED']);?></td>
+                  <tr>
+                      <td align="center" class="ui-state-default">Achievement<br />Till Last Year</td>  
+                      <td align="center" class="ui-widget-content">&nbsp;</td>
+                      <td align="center" class="ui-widget-content" id="LA_NO_ACHIEVE"><?php echo ($arrSetupData['LA_NA'])?'':$arrAchievement['LA_NO'];?></td>
+                      <td align="center" class="ui-widget-content" id="LA_HA_ACHIEVE"><?php echo ($arrSetupData['LA_NA'])?'':$arrAchievement['LA_HA'];?></td>
+                    
+                      <td align="center" class="ui-widget-content" id="FA_HA_ACHIEVE"><?php echo ($arrSetupData['FA_NA'])?'':$arrAchievement['FA_HA'];?></td>
+                      
+                      <td align="center" class="ui-widget-content" id="HW_EARTHWORK_ACHIEVE"><?php echo ($arrSetupData['HW_EARTHWORK_NA'])?'':$arrAchievement['HW_EARTHWORK'];?></td>
+                      <td align="center" class="ui-widget-content" id="HW_MASONRY_ACHIEVE"><?php echo ($arrSetupData['HW_MASONRY_NA'])?'':$arrAchievement['HW_MASONRY'];?></td>
+                      <td align="center" class="ui-widget-content" id="STEEL_WORK_ACHIEVE"><?php echo ($arrSetupData['STEEL_WORK_NA'])?'':$arrAchievement['STEEL_WORK'];?></td>
+                    <td align="center" class="ui-widget-content" id="CANAL_EARTHWORK_ACHIEVE"><?php echo ($arrSetupData['CANAL_EARTHWORK_NA'])?'':$arrAchievement['CANAL_EARTHWORK'];?></td>
+                    <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_ACHIEVE"><?php echo ($arrSetupData['CANAL_STRUCTURE_NA'])?'':$arrAchievement['CANAL_STRUCTURE'];?></td>
+                    <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_MASONRY_ACHIEVE"><?php echo ($arrSetupData['CANAL_STRUCTURE_MASONRY_NA'])?'':$arrAchievement['CANAL_STRUCTURE_MASONRY'];?></td>
+                    <td align="center" class="ui-widget-content" id="CANAL_LINING_ACHIEVE"><?php echo ($arrSetupData['CANAL_LINING_NA'])?'':$arrAchievement['CANAL_LINING'];?></td>
+                      <td align="center" class="ui-widget-content" >&nbsp;</td>
+                      <td align="center" class="ui-widget-content" id="KHARIF_ACHIEVE"><?php
+                      echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':$arrAchievement['KHARIF'];
+                     //  echo $arrAchievement['KHARIF'];
+                      ?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_ACHIEVE"><?php  echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':$arrAchievement['RABI'];
+                      // echo $arrAchievement['RABI'];?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_ACHIEVE"><?php echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':($arrAchievement['KHARIF']+$arrAchievement['RABI']);
+                      //echo ($arrAchievement['KHARIF']+$arrAchievement['RABI']);?></td>
+                        <td align="center" class="ui-widget-content" id="KHARIF_RESTORED_ACHIEVE"><?php echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':$arrAchievement['KHARIF_RESTORED'];
+                        //echo $arrAchievement['KHARIF_RESTORED'];?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_RESTORED_ACHIEVE"><?php echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':$arrAchievement['RABI_RESTORED'];
+                      //echo $arrAchievement['RABI_RESTORED'];?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_RESTORED_ACHIEVE"><?php echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':($arrAchievement['KHARIF_RESTORED']+$arrAchievement['RABI_RESTORED']);
+                      //echo ($arrAchievement['KHARIF_RESTORED']+$arrAchievement['RABI_RESTORED']);?></td>
+                    </tr>
+                    <tr>
+                      <td align="center" class="ui-state-default">Diff</td>
+                      <td align="center" class="ui-widget-content">&nbsp;</td>
+                      <td align="center" class="ui-widget-content" id="LA_NO_DIFF"><?php  echo ($arrSetupData['LA_NA'])?'':($arrEstimation['LA_NO']-$arrAchievement['LA_NO']);?></td>
+                      <td align="center" class="ui-widget-content" id="LA_HA_DIFF"><?php  echo ($arrSetupData['LA_NA'])?'':($arrEstimation['LA_HA']-$arrAchievement['LA_HA']);?></td>
+                      <td align="center" class="ui-widget-content" id="FA_HA_DIFF"><?php  echo ($arrSetupData['FA_NA'])?'':($arrEstimation['FA_HA']-$arrAchievement['FA_HA']);?></td>
+                      <td align="center" class="ui-widget-content" id="HW_EARTHWORK_DIFF"><?php  echo ($arrSetupData['HW_EARTHWORK_NA'])?'':($arrEstimation['HW_EARTHWORK']-$arrAchievement['HW_EARTHWORK']);?></td>
+                      <td align="center" class="ui-widget-content" id="HW_MASONRY_DIFF"><?php  echo ($arrSetupData['HW_MASONRY_NA'])?'':($arrEstimation['HW_MASONRY']-$arrAchievement['HW_MASONRY']);?></td>
+                      <td align="center" class="ui-widget-content" id="STEEL_WORK_DIFF"><?php  echo ($arrSetupData['STEEL_WORK_NA'])?'':($arrEstimation['STEEL_WORK']-$arrAchievement['STEEL_WORK']);?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_EARTHWORK_DIFF"><?php  echo ($arrSetupData['CANAL_EARTHWORK_NA'])?'':($arrEstimation['CANAL_EARTHWORK']-$arrAchievement['CANAL_EARTHWORK']);?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_DIFF"><?php  echo ($arrSetupData['CANAL_STRUCTURE_NA'])?'':($arrEstimation['CANAL_STRUCTURE']-$arrAchievement['CANAL_STRUCTURE']);?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_STRUCTURE_MASONRY_DIFF"><?php  echo ($arrSetupData['CANAL_STRUCTURE_MASONRY_NA'])?'':($arrEstimation['CANAL_STRUCTURE_MASONRY']-$arrAchievement['CANAL_STRUCTURE_MASONRY']);?></td>
+                      <td align="center" class="ui-widget-content" id="CANAL_LINING_DIFF"><?php  echo ($arrSetupData['CANAL_LINING_NA'])?'':($arrEstimation['CANAL_LINING']-$arrAchievement['CANAL_LINING']);?></td>
+                      <td align="center" class="ui-widget-content"></td>
+                      <td align="center" class="ui-widget-content" id="KHARIF_DIFF"><?php  echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':($arrEstimation['KHARIF']-$arrAchievement['KHARIF']);?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_DIFF"><?php  echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':($arrEstimation['RABI']-$arrAchievement['RABI']);?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_DIFF"><?php  echo ($arrSetupData['NEW_IRRIGATION_POTENTIAL_NA'])?'':(($arrEstimation['KHARIF']+$arrEstimation['RABI'])-($arrAchievement['KHARIF']+$arrAchievement['RABI']));?></td>
+                        <td align="center" class="ui-widget-content" id="KHARIF_RESTORED_DIFF"><?php  echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':($arrEstimation['KHARIF_RESTORED']-$arrAchievement['KHARIF_RESTORED']);?></td>
+                      <td align="center" class="ui-widget-content" id="RABI_RESTORED_DIFF"><?php  echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':($arrEstimation['RABI_RESTORED']-$arrAchievement['RABI_RESTORED']);?></td>
+                      <td align="center" class="ui-widget-content" id="TOTAL_RESTORED_DIFF"><?php  echo ($arrSetupData['IRRIGATION_POTENTIAL_TO_BE_RESTORED_NA'])?'':(($arrEstimation['KHARIF_RESTORED']+$arrEstimation['RABI_RESTORED'])-($arrAchievement['KHARIF_RESTORED']+$arrAchievement['RABI_RESTORED']));?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="15" align="left" class="ui-widget-content">
+                            <?php if (!strstr($buttons, 'Project Locked'))
+                                //echo getButton('Fill Empty Box with Zero', 'fillZero()', 4, 'icon-repeat');
+                                echo getButton(array('caption'=>'Fill Empty Box with Zero', 'event'=>'fillZero()', 'icon'=>'icon-repeat', 'title'=>'Fill Empty Box with Zero'))
+                            ?>
+                        </td>
+                        <?php /*?><td colspan="9" align="center" class="ui-widget-content">
+                            <big><strong>Date of submission of above Data : 
+                            <?php if(!strstr($buttons, 'Project Locked')){?>
+                            <input type="text" name="SUBMISSION_DATE" id="SUBMISSION_DATE"
+                                readonly="readonly" value="<?php echo myDateFormat($SUBMISSION_DATE);?>" size="14"
+                                 class="dp1" style="text-align:center" /> 
+                            <?php }else{
+                                echo '<span class="badge badge-info">'.
+                                    myDateFormat($SUBMISSION_DATE).
+                                    '</span>';
+                                }?>
+                            </strong></big>
+                            </td><?php */ ?>
+                    </tr>
+                </table>
+            </div>
+            <div id="mySaveDiv" align="right" class="mysavebar">
+                <?php echo $buttons;
+                echo getButton('Clear Error', 'clearTargetFormError();', 4, 'cus-bin');
+                //echo getButton(array('caption'=>'Clear Error', 'event'=>'clearTargetFormError()', 'icon'=>'cus-bin', 'title'=>'Clear Error'))
+                ?>
+            </div>
+        </form>
+    </div>
+<script  type="text/javascript">
+var validator;
+$().ready(function () {
+
+    $('.mydecimal').numeric({
+        allowPlus           : false, // Allow the + sign
+        allowMinus          : false,  // Allow the - sign
+        allowThouSep        : false,  // Allow the thousands separator, default is the comma eg 12,000
+        allowDecSep         : true,  // Allow the decimal separator, default is the fullstop eg 3.141
+        allowLeadingSpaces  : false,
+        maxDigits           : 15,   // The max number of digits
+        maxDecimalPlaces    : 2,   // The max number of decimal places
+        maxPreDecimalPlaces : 12,   // The max number digits before the decimal point
+        max                 : NaN,   // The max numeric value allowed
+        min                 : 0 // The min numeric value allowed
+    });
+    $('.myinteger').numeric({
+        allowPlus           : false, // Allow the + sign
+        allowMinus          : false,  // Allow the - sign
+        allowThouSep        : false,  // Allow the thousands separator, default is the comma eg 12,000
+        allowDecSep         : false,  // Allow the decimal separator, default is the fullstop eg 3.141
+        allowLeadingSpaces  : false,
+        maxDigits           : 5,   // The max number of digits
+        maxDecimalPlaces    : 2,   // The max number of decimal places
+        maxPreDecimalPlaces : 11,   // The max number digits before the decimal point
+        max                 : 99999,   // The max numeric value allowed
+        min                 : 0 // The min numeric value allowed
+    });
+    $('.dp1').css("text-align", "center");
+    window.validator = $("#frmYearlyTarget").validate({
+        rules: {
+            /*"BUDGET_AMOUNT" : {required : true, min:0, number:true},*/
+            "EXPENDITURE[]": {required: true, min: 0, number: true}/*,
+            "SUBMISSION_DATE":{required : true}*/
+            <?php if (count($arrForValidation) > 0) {
+                echo ',' . implode(',', $arrForValidation);
+            }?>
+        },
+        messages: {
+            /*"BUDGET_AMOUNT" : {required : "Required - Budget Amount", min:"Required Positive Amount"}*/
+        }
+    });
+    // the following method must come AFTER .validate()
+    //calculateSubTotal('EXPENDITURE');
+    calculateTotals();
+});
+//
+var v = 0;
+function calculateTotals(){
+    var arrVFields = new Array('EXPENDITURE', '<?php echo implode("','", $arrValidFields);?>','KHARIF','RABI','KHARIF_RESTORED','RABI_RESTORED');
+    for(i=0;i<arrVFields.length;i++){
+      //  console.log(arrVFields[i]);
+        calculateSubTotal(arrVFields[i], 0);
+    }
+}
+function calculateSubTotal(ids, no) {
+//alert(ids+ "    ====   "+no);
+    var arrIntFields = new Array('<?php echo implode("','", $arrIntNames);?>','KHARIF', 'RABI','KHARIF_RESTORED','RABI_RESTORED');
+    var arrIp = new Array('KHARIF', 'RABI','KHARIF_RESTORED','RABI_RESTORED');
+    var sum = totalKharif = totalRabi = 0;
+
+    $('.'+ids).each(function (index, value){
+        sum += checkNo($(this).val());
+       // console.log('ctrl:' + this.id + ' s:'+ sum);
+        if(ids=='KHARIF'){
+            ctrl = this.id.replace('KHARIF', 'RABI');//KHARIF_0865
+            totalctrl = this.id.replace('KHARIF', 'IP_TOTAL');//IP_TOTAL_0465
+            kval = checkNo(this.value);
+            rval = checkNo($('#'+ctrl).val());
+            totalKharif += kval;
+            totalRabi += rval;
+            //ctrlVal = kval + rval ;
+            $('#'+totalctrl).val(kval + rval);
+        }else if(ids=='RABI'){
+            ctrl = this.id.replace('RABI', 'KHARIF');//KHARIF_0865
+            totalctrl = this.id.replace('RABI', 'IP_TOTAL');//IP_TOTAL_0465
+            rval = checkNo(this.value);
+            kval = checkNo($('#'+ctrl).val());
+            totalKharif += kval;
+            totalRabi += rval;
+            //ctrlVal = kval + rval ;
+            $('#'+totalctrl).val(kval + rval);
+        }else if(ids=='RABI_RESTORED'){
+            ctrl = this.id.replace('RABI_RESTORED', 'KHARIF_RESTORED');//KHARIF_0865
+            totalctrl = this.id.replace('RABI_RESTORED', 'IP_TOTAL_RESTORED');//IP_TOTAL_0465
+            rval = checkNo(this.value);
+            kval = checkNo($('#'+ctrl).val());
+            totalKharif += kval;
+            totalRabi += rval;
+            //ctrlVal = kval + rval ;
+            $('#'+totalctrl).val(kval + rval);
+        }else if(ids=='KHARIF_RESTORED'){
+             ctrl = this.id.replace('KHARIF_RESTORED', 'RABI_RESTORED');//KHARIF_0865
+            totalctrl = this.id.replace('KHARIF_RESTORED', 'IP_TOTAL_RESTORED');//IP_TOTAL_0465
+            kval = checkNo(this.value);
+            rval = checkNo($('#'+ctrl).val());
+            totalKharif += kval;
+            totalRabi += rval;
+            //ctrlVal = kval + rval ;
+            $('#'+totalctrl).val(kval + rval);
+        }
+    });
+
+ 
+                 if($.inArray(ids, arrIntFields)) {        
+                //console.log('T ctrl:' + '#' + ids + '_T' + ' s:'+ sum);
+                //$('#' + ids + '_T').val(sum);
+                $('#' + ids + '_T').html(sum);
+                if(ids=='KHARIF' || ids=='RABI'){
+                    $('#TOTAL_T').html(totalKharif+totalRabi);
+                }
+                else if(ids=='KHARIF_RESTORED' || ids=='RABI_RESTORED'){
+                    $('#TOTAL_RESTORED_T').html(totalKharif+totalRabi);
+                }
+               
+            }else{
+            //    console.log('T ctrl:' + '#' + ids + '_T' + ' s:'+ sum);
+                //$('#' + ids + '_T').val(sum.toFixed(3));       
+                $('#' + ids + '_T').html(sum.toFixed(2));
+            }
+ 
+
+     if(no!=0 && ids!="EXPENDITURE")
+     {    
+         var esti=$("#"+ids+"_ESTI").html();
+         var achi=$("#"+ids+"_ACHIEVE").html();
+
+        if(esti.length>0)
+                 var esti=parseFloat(esti);
+        else
+             esti=0;
+
+         if(achi.length>0)
+            var achi=parseFloat(achi);
+         else
+             var achi=0;        
+ 
+        diff=esti-achi;
+     
+            if(sum>(esti-achi))
+                {
+                    $("#"+no).val("0");
+                      showAlert('Oops...','Should be less than '+diff, 'error');
+                    
+                    calculateSubTotal(ids,0);  
+
+                     var n = no.split("_");
+                        if((n[0]=="KHARIF" || n[0]=="RABI") && n[1]=="RESTORED")
+                            calculateRestoredIrri(n[2],no);
+                        else if(n[0]=="KHARIF" || n[0]=="RABI")
+                             calculateIrri(n[1],no);             
+                }
+             
+     } 
+   
+}
+
+function getExpenditure(fin_tot) {
+    $('#divBudgetAmount').html(fin_tot.toFixed(2));
+    $('#BUDGET_AMOUNT').val(fin_tot.toFixed(2));
+}
+
+//
+function getFloatValue(vv) {
+    var n = parseFloat(vv);
+    return ((isNaN(n)) ? 0 : n);
+}
+
+//
+function calculate(ids) {
+    var curMonthVal = $('#' + ids).val();
+    var prevMonth = $('#' + ids + "_P_H").val();
+
+    if (prevMonth == '') prevMonth = 0;
+    if (curMonthVal == '') curMonthVal = 0;
+    var sum;
+    //if(/^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(curMonthVal)){
+    //sum = parseFloat(curMonthVal) + parseFloat(sum);
+    //sum = parseFloat(prevMonth) + parseFloat(curMonthVal);
+    //$("#"+ids+"_P").val(sum);
+    //}
+    sum = 0;
+    var curFinancialYear = $('#' + ids + '_CFY_H').val();
+    if (curFinancialYear == "") curFinancialYear = 0;
+    sum = parseFloat(curFinancialYear) + parseFloat(curMonthVal);
+    $('#' + ids + '_CFY').val(sum);
+}
+
+//
+function saveTarget() {
+    var myValidation = $("#frmYearlyTarget").valid();
+    if (!myValidation) {
+        //alert('You have : ' + window.validator.numberOfInvalids() + ' errors in this form.');
+        showAlert('Oops...','You have : ' + ( window.validator.numberOfInvalids()) + ' errors in this form.', 'error');
+        return;
+    }
+    if (myValidation) {
+        var params = {
+            'divid': 'mySaveDiv',
+            'url': 'saveTarget',
+            'data': $('#frmYearlyTarget').serialize(),
+            'donefname': 'doneSaving',
+            'failfname': 'failSaving',
+            'alwaysfname': 'none'
+        };
+        callMyAjax(params);
+    } else {
+        showMyAlert('Error...', 'There is/are some Required Data... <br />Please Check & Complete it.', 'warn');
+    }
+}
+//
+function doneSaving(response) {
+    $('#message').html(parseAndShowMyResponse(response));
+    <?php 
+    if ($entrymode == 'monthly') {
+        echo 'closeDialog("modalBox");';
+    }else{
+        echo "$('#divTargetForm').html('');\ngridReload();";
+    }?>
+}
+//
+function failSaving(response) {
+    $('#message').html(parseAndShowMyResponse(response));
+}
+//
+function checkAAAmount() {
+    if ($('#BUDGET_AMOUNT').val() > 0) {
+        var BUDGET_AMOUNT = parseFloat($('#BUDGET_AMOUNT').val());
+        var AA_AMOUNT = parseFloat($('#AA_AMOUNT').val());
+        if ((BUDGET_AMOUNT > AA_AMOUNT)) {
+            alert('Budget Amount is more than ' + $('#AA_RAA').val() + ' Amount :' + $('#AA_AMOUNT').val());
+            $('#BUDGET_AMOUNT').val('');
+        }
+    }
+}
+//
+function fillZero() {
+    $('.xtext').each(function () {
+        if (this.value == '') {
+            this.value = 0;
+        }
+    });
+}
+
+function calculateRestoredIrri(mmonth,id)
+{     
+    var ik = 'KHARIF_RESTORED_' + mmonth;
+    var ir = 'RABI_RESTORED_' + mmonth;
+    var it = 'IP_TOTAL_RESTORED_' + mmonth;
+
+    var m = mmonth.substring(0, 2);
+    var strid = $('#m_'+m).val();
+    var ids = strid.split(',');
+//alert("strid= "+strid+"   ids == "+ids);
+    var tk=0, tr=0, tt=0;
+    for(i=0;i<ids.length;i++){
+        //console.log('>> '+i);
+        kh = checkNo($('#KHARIF_RESTORED_'+m+ids[i]).val());
+        rab = checkNo($('#RABI_RESTORED_'+m+ids[i]).val());
+        tot = kh + rab;
+
+        tk += kh;
+        tr += rab;
+        tt += tot;
+    }
+    $('#IP_KHARIF_RESTORED_'+m).val(tk);
+    $('#IP_RABI_RESTORED_'+m).val(tr);
+    $('#IP_TOTAL_RESTORED_'+m).val(tt);
+
+    //return;
+
+    var kt = checkNo($('#' + ik).val());
+    var rt = checkNo($('#' + ir).val());
+    var tt = kt + rt
+    $('#' + it).val(roundNumber(tt, 5));
+    var Kharif=0;
+     var n = id.split("_");
+    if(n[0]=="KHARIF")
+        Kharif=id;
+    var Rabi=0;
+    if(n[0]=="RABI")
+        Rabi=id;
+    calculateSubTotal('KHARIF_RESTORED',Kharif);
+    calculateSubTotal('RABI_RESTORED',Rabi);
+    calculateSubTotal('IP_TOTAL_RESTORED',0);
+
+
+    var block_kharif_total =0;
+    var block_rabi_total =0;
+    var block_total_total=0;
+    $(".in_kharif").each(function() {
+        block_kharif_total+= checkNo($(this).val());
+    });
+
+    $(".in_rabi").each(function() {
+        block_rabi_total+= checkNo($(this).val());
+    });
+
+    $(".in_ip").each(function() {
+        block_total_total+= checkNo($(this).val());
+    });
+
+    $('#KHARIF_TOTAL').val(block_kharif_total);
+    $('#RABI_TOTAL').val(block_rabi_total);
+    $('#IP_TOTAL_TOTAL').val(block_total_total);
+}
+
+function calculateIrri(mmonth,id) {   
+    var ik = 'KHARIF_' + mmonth;
+    var ir = 'RABI_' + mmonth;
+    var it = 'IP_TOTAL_' + mmonth;
+    var m = mmonth.substring(0, 2);
+    var strid = $('#m_'+m).val();
+    var ids = strid.split(',');
+
+    var tk=0, tr=0, tt=0;
+    for(i=0;i<ids.length;i++){
+        //console.log('>> '+i);
+        kh = checkNo($('#KHARIF_'+m+ids[i]).val());
+        rab = checkNo($('#RABI_'+m+ids[i]).val());
+        tot = kh + rab;
+
+        tk += kh;
+        tr += rab;
+        tt += tot;
+    }
+    $('#IP_KHARIF_'+m).val(tk);
+    $('#IP_RABI_'+m).val(tr);
+    $('#IP_TOTAL_'+m).val(tt);
+
+    //return;
+
+    var kt = checkNo($('#' + ik).val());
+    var rt = checkNo($('#' + ir).val());
+    var tt = kt + rt
+    $('#' + it).val(roundNumber(tt, 5));
+
+      var Kharif=0;
+     var n = id.split("_");
+    if(n[0]=="KHARIF")
+        Kharif=id;
+    var Rabi=0;
+    if(n[0]=="RABI")
+        Rabi=id;
+
+    calculateSubTotal('KHARIF',Kharif);
+    calculateSubTotal('RABI',Rabi);
+    calculateSubTotal('IP_TOTAL',0);
+
+
+    var block_kharif_total =0;
+    var block_rabi_total =0;
+    var block_total_total=0;
+    $(".in_kharif").each(function() {
+        block_kharif_total+= checkNo($(this).val());
+    });
+
+    $(".in_rabi").each(function() {
+        block_rabi_total+= checkNo($(this).val());
+    });
+
+    $(".in_ip").each(function() {
+        block_total_total+= checkNo($(this).val());
+    });
+
+    $('#KHARIF_TOTAL').val(block_kharif_total);
+    $('#RABI_TOTAL').val(block_rabi_total);
+    $('#IP_TOTAL_TOTAL').val(block_total_total);
+}
+
+function clearTargetFormError() {
+    $("#frmYearlyTarget").validate().resetForm();
+}
+
+makeReadable($('#tbl_physical_target'));
+</script>
